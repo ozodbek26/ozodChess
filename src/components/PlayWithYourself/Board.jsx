@@ -1,45 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Board.module.scss";
 
-export default function Board({ board, setBoard }) {
+import { startingPosition } from "./data";
+
+export default function Board({
+  board,
+  setBoard,
+  whereFrom,
+  whereTo,
+  setWhereFrom,
+  setWhereTo,
+}) {
   useEffect(() => {
-    const startingPosition = [
-      { id: "0-0", piece: "rook_black1" },
-      { id: "0-7", piece: "rook_black2" },
-      { id: "0-1", piece: "horses_black1" },
-      { id: "0-6", piece: "horses_black2" },
-      { id: "0-2", piece: "Bishop_black1" },
-      { id: "0-5", piece: "Bishop_black2" },
-      { id: "0-4", piece: "King_black" },
-      { id: "0-3", piece: "Queen_black" },
-      { id: "1-0", piece: "Pawn_black1" },
-      { id: "1-1", piece: "Pawn_black2" },
-      { id: "1-2", piece: "Pawn_black3" },
-      { id: "1-3", piece: "Pawn_black4" },
-      { id: "1-4", piece: "Pawn_black5" },
-      { id: "1-5", piece: "Pawn_black6" },
-      { id: "1-6", piece: "Pawn_black7" },
-      { id: "1-7", piece: "Pawn_black8" },
-      { id: "7-0", piece: "rook_white1" },
-      { id: "7-7", piece: "rook_white2" },
-      { id: "7-1", piece: "horses_white1" },
-      { id: "7-6", piece: "horses_white2" },
-      { id: "7-2", piece: "Bishop_white1" },
-      { id: "7-5", piece: "Bishop_white2" },
-      { id: "7-4", piece: "King_white" },
-      { id: "7-3", piece: "Queen_white" },
-      { id: "6-0", piece: "Pawn_white1" },
-      { id: "6-1", piece: "Pawn_white2" },
-      { id: "6-2", piece: "Pawn_white3" },
-      { id: "6-3", piece: "Pawn_white4" },
-      { id: "6-4", piece: "Pawn_white5" },
-      { id: "6-5", piece: "Pawn_white6" },
-      { id: "6-6", piece: "Pawn_white7" },
-      { id: "6-7", piece: "Pawn_white8" },
-    ];
-
     const newBoard = [];
-
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const isWhite = (row + col) % 2 === 0;
@@ -50,19 +23,118 @@ export default function Board({ board, setBoard }) {
           id,
           background: isWhite ? "white" : "grey",
           piece: piece ? piece.piece : null,
+          shapecolor: piece ? piece.shapecolor : null,
+          kto: piece ? piece.kto : null,
+          img: piece ? piece.img : null,
         });
       }
     }
-
     setBoard(newBoard);
   }, [setBoard]);
 
+  const [clicks, setClicks] = useState(0);
+
+  function handleClick(cell) {
+    const moveFrom = whereFrom;
+    const moveTo = cell.id;
+
+    if (clicks === 0) {
+      if (cell.piece === null) {
+        console.log("нет фигуры");
+        return;
+      } else {
+        console.log(cell.piece);
+        setWhereFrom({
+          id: cell.id,
+          piece: cell.piece,
+          shapecolor: cell.shapecolor,
+          kto: cell.kto,
+          img: cell.img,
+        });
+        console.log("from", moveFrom);
+        setClicks(1);
+      }
+    }
+
+    if (clicks === 1) {
+      if (!whereFrom) {
+        console.log("что-то пошло не так, выбери фигуру снова");
+        setClicks(0);
+        return;
+      }
+
+      if (cell.id === whereFrom.id) {
+        console.log("нельзя ходить на ту же клетку");
+        return;
+      }
+
+      if (cell.shapecolor === whereFrom.shapecolor) {
+        console.log("нельзя ходить на свою фигуру");
+        return;
+      }
+
+      setClicks(0);
+
+      // console.log("ход готов:", moveFrom.id, "->", moveTo);
+      movePiece(moveTo);
+
+      return;
+    }
+  }
+
+  function movePiece(targetId) {
+    if (!whereFrom || !targetId) {
+      console.log("недостаточно данных для хода");
+      return;
+    }
+
+    console.log(
+      "двигаем фигуру",
+      whereFrom.piece,
+      "с",
+      whereFrom.id,
+      "на",
+      targetId,
+    );
+
+    const updatedBoard = board.map((cell) => {
+      if (cell.id === whereFrom.id) {
+        return {
+          ...cell,
+          piece: null,
+          shapecolor: null,
+          kto: null,
+          img: null,
+        };
+      }
+      if (cell.id === targetId) {
+        return {
+          ...cell,
+          piece: whereFrom.piece,
+          shapecolor: whereFrom.shapecolor,
+          kto: whereFrom.kto,
+          img: whereFrom.img,
+        };
+      }
+      return cell;
+    });
+
+    setBoard(updatedBoard);
+    setWhereFrom(null);
+    setWhereTo(null);
+  }
+
   return (
     <div className={styles.board}>
-      {board.map((e) => (
-        <div key={e.id} style={{ background: e.background }}>
-          <p>{e.id}</p>
-          {e.piece && <p>{e.piece}</p>}
+      {board.map((cell) => (
+        <div
+          key={cell.id}
+          style={{ background: cell.background }}
+          onClick={() => handleClick(cell)}
+        >
+          <p className={styles.textId}>{cell.id}</p>
+          {/* {cell.piece && <p>{cell.piece}</p>} */}
+          <img className={styles.imgg} src={cell.img} alt="" />
         </div>
       ))}
     </div>
