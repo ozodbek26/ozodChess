@@ -24,7 +24,7 @@ export const startingPosition = [
   { id: "0-5", piece: "Bishop_black2", shapecolor: "black" , kto: "BishopBlack", img: bB},
   { id: "0-4", piece: "King_black", shapecolor: "black" , kto: "KingBlack", img: bK},
   { id: "0-3", piece: "Queen_black", shapecolor: "black" , kto: "QueenBlack", img: bQ},
-  { id: "1-0", piece: "Pawn_black1", shapecolor: "black", kto: "PawnBlack" , img: bP},
+  { id: "1-0", piece: " ", shapecolor: "black", kto: "PawnBlack" , img: bP},
   { id: "1-1", piece: "Pawn_black2", shapecolor: "black", kto: "PawnBlack" , img: bP},
   { id: "1-2", piece: "Pawn_black3", shapecolor: "black", kto: "PawnBlack" , img: bP},
   { id: "1-3", piece: "Pawn_black4", shapecolor: "black", kto: "PawnBlack" , img: bP},

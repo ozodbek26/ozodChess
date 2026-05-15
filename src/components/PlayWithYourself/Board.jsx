@@ -2,14 +2,27 @@ import React, { useEffect, useState } from "react";
 import styles from "./Board.module.scss";
 
 import { startingPosition } from "./data";
+import { movePiece } from "./movePiece";
+import { BlackPawns } from "./functionsShapes/blackPawns";
+import { BlackKing } from "./functionsShapes/blackKing";
 
 export default function Board({
+  whoseMove,
+  setWhoseMove,
+
+  RecordingMoves,
+  setRecordingMoves,
+
   board,
   setBoard,
+
   whereFrom,
   whereTo,
   setWhereFrom,
   setWhereTo,
+
+  eatenFigures,
+  setEatenFigures,
 }) {
   useEffect(() => {
     const newBoard = [];
@@ -21,6 +34,8 @@ export default function Board({
 
         newBoard.push({
           id,
+          row,
+          col,
           background: isWhite ? "white" : "grey",
           piece: piece ? piece.piece : null,
           shapecolor: piece ? piece.shapecolor : null,
@@ -36,24 +51,30 @@ export default function Board({
 
   function handleClick(cell) {
     const moveFrom = whereFrom;
-    const moveTo = cell.id;
+    const moveTo = cell;
 
     if (clicks === 0) {
       if (cell.piece === null) {
         console.log("нет фигуры");
         return;
-      } else {
-        console.log(cell.piece);
-        setWhereFrom({
-          id: cell.id,
-          piece: cell.piece,
-          shapecolor: cell.shapecolor,
-          kto: cell.kto,
-          img: cell.img,
-        });
-        console.log("from", moveFrom);
-        setClicks(1);
       }
+
+      if (cell.shapecolor !== whoseMove) {
+        console.log("сейчас ходит " + whoseMove);
+        return;
+      }
+      console.log(cell.piece);
+      setWhereFrom({
+        id: cell.id,
+        piece: cell.piece,
+        shapecolor: cell.shapecolor,
+        kto: cell.kto,
+        img: cell.img,
+        row: cell.row,
+        col: cell.col,
+      });
+      console.log("from", moveFrom);
+      setClicks(1);
     }
 
     if (clicks === 1) {
@@ -75,53 +96,45 @@ export default function Board({
 
       setClicks(0);
 
-      // console.log("ход готов:", moveFrom.id, "->", moveTo);
-      movePiece(moveTo);
+      const canMove = BlackPawns(whereFrom, moveTo);
+      if (!canMove) {
+        console.log("ход черной пешки невозможен");
+        setClicks(0);
+        setWhereFrom(null);
+        return;
+      }
 
+      const canKingMove = BlackKing(whereFrom, moveTo, board, setBoard);
+      if (!canKingMove) {
+        console.log("ход черного king невозможен");
+        setClicks(0);
+        setWhereFrom(null);
+        return;
+      }
+
+      if (canKingMove.castling) {
+        setWhereFrom(null);
+        setWhereTo(null);
+      } else {
+        movePiece(
+          whereFrom,
+          moveTo,
+          board,
+          setBoard,
+          setWhereFrom,
+          setWhereTo,
+          setEatenFigures,
+          setRecordingMoves,
+        );
+      }
+
+      if (whoseMove === "white") {
+        setWhoseMove("black");
+      } else {
+        setWhoseMove("white");
+      }
       return;
     }
-  }
-
-  function movePiece(targetId) {
-    if (!whereFrom || !targetId) {
-      console.log("недостаточно данных для хода");
-      return;
-    }
-
-    console.log(
-      "двигаем фигуру",
-      whereFrom.piece,
-      "с",
-      whereFrom.id,
-      "на",
-      targetId,
-    );
-
-    const updatedBoard = board.map((cell) => {
-      if (cell.id === whereFrom.id) {
-        return {
-          ...cell,
-          piece: null,
-          shapecolor: null,
-          kto: null,
-          img: null,
-        };
-      }
-      if (cell.id === targetId) {
-        return {
-          ...cell,
-          piece: whereFrom.piece,
-          shapecolor: whereFrom.shapecolor,
-          kto: whereFrom.kto,
-          img: whereFrom.img,
-        };
-      }
-      return cell;
-    });
-
-    setBoard(updatedBoard);
-    setWhereFrom(null);
-    setWhereTo(null);
   }
 
   return (
