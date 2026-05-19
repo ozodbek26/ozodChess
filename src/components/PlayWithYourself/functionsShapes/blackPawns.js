@@ -1,25 +1,37 @@
-export function BlackPawns(whereFrom, moveTo) {
-  const blackPawns = [
-    { name: "Pawn_black1", twoMove: true, id: 3 - 0 },
-    { name: "Pawn_black2", twoMove: true, id: 3 - 1 },
-    { name: "Pawn_black3", twoMove: true, id: 3 - 2 },
-    { name: "Pawn_black4", twoMove: true, id: 3 - 3 },
-    { name: "Pawn_black5", twoMove: true, id: 3 - 4 },
-    { name: "Pawn_black6", twoMove: true, id: 3 - 5 },
-    { name: "Pawn_black7", twoMove: true, id: 3 - 6 },
-    { name: "Pawn_black8", twoMove: true, id: 3 - 7 },
-  ];
-
-  if (!blackPawns.includes(whereFrom.piece)) {
+export function BlackPawns(whereFrom, moveTo, board) {
+    
+  if (whereFrom.kto !== "PawnBlack") {
     return true;
   }
 
-  const rowDiff = moveTo.row - whereFrom.row;
-  const colDiff = moveTo.col - whereFrom.col;
+  const row = whereFrom.row;
+  const col = whereFrom.col;
 
-  const f1 = whereFrom.row + 1;
+  const oneStep = board.find((cell) => cell.id === `${row + 1}-${col}`);
+  const twoStep = board.find((cell) => cell.id === `${row + 2}-${col}`);
 
-  if (colDiff === f1) {
+  // Ход на 1 клетку вперед
+  if (moveTo.row === row + 1 && moveTo.col === col && moveTo.piece === null) {
+    return true;
+  }
+
+  // Первый ход на 2 клетки вперед
+  if (
+    whereFrom.twoMove &&
+    oneStep?.piece === null &&
+    twoStep?.piece === null &&
+    moveTo.id === twoStep.id
+  ) {
+    return true;
+  }
+
+  // Взятие по диагонали
+  if (
+    moveTo.row === row + 1 &&
+    Math.abs(moveTo.col - col) === 1 &&
+    moveTo.piece !== null &&
+    moveTo.shapecolor === "white"
+  ) {
     return true;
   }
 

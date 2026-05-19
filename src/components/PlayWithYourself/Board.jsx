@@ -3,8 +3,11 @@ import styles from "./Board.module.scss";
 
 import { startingPosition } from "./data";
 import { movePiece } from "./movePiece";
-import { BlackPawns } from "./functionsShapes/blackPawns";
-import { BlackKing } from "./functionsShapes/blackKing";
+import { moveValidator } from "./moveValidator";
+
+// import { BlackPawns } from "./functionsShapes/blackPawns";
+// import { BlackKing } from "./functionsShapes/blackKing";
+// import { horsesBlack } from "./functionsShapes/horsesBlack";
 
 export default function Board({
   whoseMove,
@@ -41,6 +44,10 @@ export default function Board({
           shapecolor: piece ? piece.shapecolor : null,
           kto: piece ? piece.kto : null,
           img: piece ? piece.img : null,
+          twoMove:
+            piece && (piece.kto === "PawnBlack" || piece.kto === "PawnWhite")
+              ? true
+              : false,
         });
       }
     }
@@ -72,6 +79,7 @@ export default function Board({
         img: cell.img,
         row: cell.row,
         col: cell.col,
+        twoMove: cell.twoMove,
       });
       console.log("from", moveFrom);
       setClicks(1);
@@ -96,23 +104,39 @@ export default function Board({
 
       setClicks(0);
 
-      const canMove = BlackPawns(whereFrom, moveTo);
-      if (!canMove) {
-        console.log("ход черной пешки невозможен");
+      // const canMove = BlackPawns(whereFrom, moveTo, board);
+      // if (!canMove) {
+      //   console.log("ход  пешки невозможен");
+      //   setClicks(0);
+      //   setWhereFrom(null);
+      //   return;
+      // }
+
+      // const canKingMove = BlackKing(whereFrom, moveTo, board, setBoard);
+      // if (!canKingMove) {
+      //   console.log("ход черного king невозможен");
+      //   setClicks(0);
+      //   setWhereFrom(null);
+      //   return;
+      // }
+
+      // const canHorseMove = horsesBlack(whereFrom, moveTo, board, setBoard);
+      // if (!canHorseMove) {
+      //   console.log("ход  коня невозможен");
+      //   setClicks(0);
+      //   setWhereFrom(null);
+      //   return;
+      // }
+      const moveResult = moveValidator(whereFrom, moveTo, board, setBoard);
+
+      if (!moveResult) {
+        console.log("ход невозможен");
         setClicks(0);
         setWhereFrom(null);
         return;
       }
 
-      const canKingMove = BlackKing(whereFrom, moveTo, board, setBoard);
-      if (!canKingMove) {
-        console.log("ход черного king невозможен");
-        setClicks(0);
-        setWhereFrom(null);
-        return;
-      }
-
-      if (canKingMove.castling) {
+      if (moveResult.castling) {
         setWhereFrom(null);
         setWhereTo(null);
       } else {
