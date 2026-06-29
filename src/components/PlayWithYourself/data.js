@@ -20,7 +20,7 @@ export const startingPosition = [
   { id: "0-7", piece: "rook_black2", shapecolor: "black" , kto: "rookBlack", img: bR},
   { id: "0-1", piece: "horses_black1", shapecolor: "black" , kto: "horsesBlack", img: bN},
   { id: "0-6", piece: "horses_black2", shapecolor: "black" , kto: "horsesBlack", img: bN },
-  { id: "0-2", piece: "Bishop_black1", shapecolor: "black" , kto: "BishopBlack", img: bB },
+  { id: "4-2", piece: "Bishop_black1", shapecolor: "black" , kto: "BishopBlack", img: bB },
   { id: "0-5", piece: "Bishop_black2", shapecolor: "black" , kto: "BishopBlack", img: bB},
   { id: "0-4", piece: "King_black", shapecolor: "black" , kto: "KingBlack", img: bK},
   { id: "0-3", piece: "Queen_black", shapecolor: "black" , kto: "QueenBlack", img: bQ},

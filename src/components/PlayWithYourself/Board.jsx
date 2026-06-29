@@ -104,29 +104,7 @@ export default function Board({
 
       setClicks(0);
 
-      // const canMove = BlackPawns(whereFrom, moveTo, board);
-      // if (!canMove) {
-      //   console.log("ход  пешки невозможен");
-      //   setClicks(0);
-      //   setWhereFrom(null);
-      //   return;
-      // }
-
-      // const canKingMove = BlackKing(whereFrom, moveTo, board, setBoard);
-      // if (!canKingMove) {
-      //   console.log("ход черного king невозможен");
-      //   setClicks(0);
-      //   setWhereFrom(null);
-      //   return;
-      // }
-
-      // const canHorseMove = horsesBlack(whereFrom, moveTo, board, setBoard);
-      // if (!canHorseMove) {
-      //   console.log("ход  коня невозможен");
-      //   setClicks(0);
-      //   setWhereFrom(null);
-      //   return;
-      // }
+     
       const moveResult = moveValidator(whereFrom, moveTo, board, setBoard);
 
       if (!moveResult) {
