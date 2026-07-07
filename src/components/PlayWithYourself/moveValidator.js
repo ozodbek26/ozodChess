@@ -2,8 +2,9 @@ import { BlackPawns } from "./functionsShapes/blackPawns";
 import { BlackKing } from "./functionsShapes/blackKing";
 import { horsesBlack } from "./functionsShapes/horsesBlack";
 import { PawnWhite } from "./functionsShapes/PawnWhite";
-
+import { Rook } from "./functionsShapes/Rook";
 import { Bishop } from "./functionsShapes/Bishop";
+import { Queen } from "./functionsShapes/Queen";
 
 export function moveValidator(whereFrom, moveTo, board, setBoard) {
   switch (whereFrom.kto) {
@@ -23,6 +24,16 @@ export function moveValidator(whereFrom, moveTo, board, setBoard) {
     case "BishopBlack":
     case "BishopWhite":
       return Bishop(whereFrom, moveTo, board);
+
+    case "rookBlack":
+    case "rookWhite":
+      return Rook(whereFrom, moveTo, board);
+
+    case "QueenBlack":
+    case "QueenWhite":
+      return Queen(whereFrom, moveTo, board);
+
+      
     default:
       return false;
   }

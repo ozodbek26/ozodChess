@@ -2,10 +2,10 @@ export function Bishop(whereFrom, moveTo, board) {
   const row = whereFrom.row;
   const col = whereFrom.col;
 
+  const toRow = moveTo.row;
+  const toCol = moveTo.col;
 
-
-
-
+  
   const cnL1 = `${row + 1}-${col + 1}`;
   const cnL2 = `${row + 2}-${col + 2}`;
   const cnL3 = `${row + 3}-${col + 3}`;
@@ -48,19 +48,10 @@ export function Bishop(whereFrom, moveTo, board) {
     cells_3.includes(moveTo.id) ||
     cells_4.includes(moveTo.id)
   ) {
-
-    
-    // console.log("ход возможен");
-    // return true;
-
-     // Проверяем, нет ли препятствий на пути
-    if (!hasObstacles(row, col, toRow, toCol, board)) {
-      console.log("ход возможен");
-      return true;
-    } else {
-      console.log("на пути препятствие");
-      return false;
-    }
+    console.log("ход возможен");
+    return true;
+  } else {
+    console.log("ход невозможен");
   }
 
   return false;
