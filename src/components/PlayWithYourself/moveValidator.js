@@ -5,7 +5,8 @@ import { PawnWhite } from "./functionsShapes/PawnWhite";
 import { Rook } from "./functionsShapes/Rook";
 import { Bishop } from "./functionsShapes/Bishop";
 import { Queen } from "./functionsShapes/Queen";
-
+import { KingWhite } from "./functionsShapes/KingWhite";
+// Move Highlighting
 export function moveValidator(whereFrom, moveTo, board, setBoard) {
   switch (whereFrom.kto) {
     case "PawnBlack":
@@ -13,6 +14,9 @@ export function moveValidator(whereFrom, moveTo, board, setBoard) {
 
     case "KingBlack":
       return BlackKing(whereFrom, moveTo, board, setBoard);
+
+    case "KingWhite":
+      return KingWhite(whereFrom, moveTo, board, setBoard);
 
     case "horsesBlack":
     case "horsesWhite":
@@ -33,7 +37,6 @@ export function moveValidator(whereFrom, moveTo, board, setBoard) {
     case "QueenWhite":
       return Queen(whereFrom, moveTo, board);
 
-      
     default:
       return false;
   }
