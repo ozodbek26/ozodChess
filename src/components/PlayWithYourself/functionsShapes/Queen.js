@@ -1,117 +1,77 @@
 export function Queen(whereFrom, moveTo, board) {
   const row = whereFrom.row;
   const col = whereFrom.col;
-
   const toRow = moveTo.row;
   const toCol = moveTo.col;
 
-  let steps = 0;
-
-  if (row === toRow && toCol > col) {
-    steps = toCol - col - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId = `${row}-${col + i}`;
-      const f1 = board.find((ee) => ee.id === currentCellId);
-      if (f1 && f1.piece !== null) {
-        return false;
-      }
-    }
-    return true;
+  if (row === toRow && col === toCol) {
+    return false;
   }
 
-  if (row === toRow && toCol < col) {
-    steps = col - toCol - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId2 = `${row}-${col - i}`;
-      const f2 = board.find((ee) => ee.id === currentCellId2);
-      if (f2 && f2.piece !== null) {
-        return false;
-      }
-    }
-    return true;
+  const isHorizontal = row === toRow;
+  const isVertical = col === toCol;
+  const isDiagonal = Math.abs(toRow - row) === Math.abs(toCol - col);
+
+  if (!isHorizontal && !isVertical && !isDiagonal) {
+    return false;
   }
 
-  if (col === toCol && toRow > row) {
-    steps = toRow - row - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId3 = `${row + i}-${col}`;
-      const f3 = board.find((ee) => ee.id === currentCellId3);
-      if (f3 && f3.piece !== null) {
-        return false;
-      }
-    }
-    return true;
-  }
+  if (isHorizontal) {
+    const step = toCol > col ? 1 : -1;
+    let currentCol = col + step;
 
-  if (col === toCol && toRow < row) {
-    steps = row - toRow - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId4 = `${row - i}-${col}`;
-      const f4 = board.find((ee) => ee.id === currentCellId4);
-      if (f4 && f4.piece !== null) {
-        return false;
-      }
-    }
-    return true;
-  }
+    while (currentCol !== toCol) {
+      const currentCellId = `${row}-${currentCol}`;
+      const blockedCell = board.find((ee) => ee.id === currentCellId);
 
-  if (toRow > row && toCol > col) {
-    steps = toRow - row - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId = `${row + i}-${col + i}`;
-      const pieceOnPath = board.find(
-        (cell) => cell.id === currentCellId && cell.piece !== null,
-      );
-      if (pieceOnPath) {
+      if (blockedCell && blockedCell.piece !== null) {
         return false;
       }
+
+      currentCol += step;
     }
 
     return true;
   }
 
-  if (toRow > row && toCol < col) {
-    steps = toRow - row - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId = `${row + i}-${col - i}`;
-      const pieceOnPath = board.find(
-        (cell) => cell.id === currentCellId && cell.piece !== null,
-      );
-      if (pieceOnPath) {
+  if (isVertical) {
+    const step = toRow > row ? 1 : -1;
+    let currentRow = row + step;
+
+    while (currentRow !== toRow) {
+      const currentCellId = `${currentRow}-${col}`;
+      const blockedCell = board.find((ee) => ee.id === currentCellId);
+
+      if (blockedCell && blockedCell.piece !== null) {
         return false;
       }
-    }
-    return true;
-  }
 
-  if (toRow < row && toCol > col) {
-    steps = row - toRow - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId = `${row - i}-${col + i}`;
-      const pieceOnPath = board.find(
-        (cell) => cell.id === currentCellId && cell.piece !== null,
-      );
-      if (pieceOnPath) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  if (toRow < row && toCol < col) {
-    steps = row - toRow - 1;
-    for (let i = 1; i <= steps; i++) {
-      const currentCellId = `${row - i}-${col - i}`;
-      const pieceOnPath = board.find(
-        (cell) => cell.id === currentCellId && cell.piece !== null,
-      );
-
-      if (pieceOnPath) {
-        return false;
-      }
+      currentRow += step;
     }
 
     return true;
   }
+
+  if (isDiagonal) {
+    const rowStep = toRow > row ? 1 : -1;
+    const colStep = toCol > col ? 1 : -1;
+    let currentRow = row + rowStep;
+    let currentCol = col + colStep;
+
+    while (currentRow !== toRow && currentCol !== toCol) {
+      const currentCellId = `${currentRow}-${currentCol}`;
+      const blockedCell = board.find((ee) => ee.id === currentCellId);
+
+      if (blockedCell && blockedCell.piece !== null) {
+        return false;
+      }
+
+      currentRow += rowStep;
+      currentCol += colStep;
+    }
+
+    return true;
+  }
+
   return false;
 }

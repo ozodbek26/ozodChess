@@ -4,10 +4,7 @@ import styles from "./Board.module.scss";
 import { startingPosition } from "./data";
 import { movePiece } from "./movePiece";
 import { moveValidator } from "./moveValidator";
-
-// import { BlackPawns } from "./functionsShapes/blackPawns";
-// import { BlackKing } from "./functionsShapes/blackKing";
-// import { horsesBlack } from "./functionsShapes/horsesBlack";
+import { MoveHighlighting } from "./MoveHighlighting";
 
 export default function Board({
   whoseMove,
@@ -29,10 +26,12 @@ export default function Board({
 }) {
   useEffect(() => {
     const newBoard = [];
+
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const isWhite = (row + col) % 2 === 0;
         const id = row + "-" + col;
+
         const piece = startingPosition.find((e) => e.id === id);
 
         newBoard.push({
@@ -40,21 +39,32 @@ export default function Board({
           row,
           col,
           background: isWhite ? "white" : "grey",
+
           piece: piece ? piece.piece : null,
           shapecolor: piece ? piece.shapecolor : null,
           kto: piece ? piece.kto : null,
           img: piece ? piece.img : null,
+
           twoMove:
-            piece && (piece.kto === "PawnBlack" || piece.kto === "PawnWhite")
+            piece &&
+            (piece.kto === "PawnBlack" ||
+              piece.kto === "PawnWhite")
               ? true
               : false,
         });
       }
     }
+
     setBoard(newBoard);
   }, [setBoard]);
 
   const [clicks, setClicks] = useState(0);
+
+  const [highlightedMoves, setHighlightedMoves] = useState([]);
+
+  function isHighlighted(id) {
+    return highlightedMoves.includes(id);
+  }
 
   function handleClick(cell) {
     const moveFrom = whereFrom;
@@ -70,7 +80,9 @@ export default function Board({
         console.log("сейчас ходит " + whoseMove);
         return;
       }
+
       console.log(cell.piece);
+
       setWhereFrom({
         id: cell.id,
         piece: cell.piece,
@@ -81,8 +93,16 @@ export default function Board({
         col: cell.col,
         twoMove: cell.twoMove,
       });
+
       console.log("from", moveFrom);
+
+      const moves = MoveHighlighting(cell, board);
+
+      setHighlightedMoves(moves);
+
       setClicks(1);
+
+      return;
     }
 
     if (clicks === 1) {
@@ -104,17 +124,21 @@ export default function Board({
 
       setClicks(0);
 
-     
-      const moveResult = moveValidator(whereFrom, moveTo, board, setBoard);
+      const moveResult = moveValidator(
+        whereFrom,
+        moveTo,
+        board,
+        setBoard
+      );
 
       if (!moveResult) {
         console.log("ход невозможен");
-        setClicks(0);
-        setWhereFrom(null);
-        return;
-      }
 
-      if (moveResult.castling) {
+        setWhereFrom(null);
+        setHighlightedMoves([]);
+
+        return;
+      }      if (moveResult.castling) {
         setWhereFrom(null);
         setWhereTo(null);
       } else {
@@ -126,15 +150,19 @@ export default function Board({
           setWhereFrom,
           setWhereTo,
           setEatenFigures,
-          setRecordingMoves,
+          setRecordingMoves
         );
       }
+
+      setHighlightedMoves([]);
+      setWhereFrom(null);
 
       if (whoseMove === "white") {
         setWhoseMove("black");
       } else {
         setWhoseMove("white");
       }
+
       return;
     }
   }
@@ -144,12 +172,19 @@ export default function Board({
       {board.map((cell) => (
         <div
           key={cell.id}
-          style={{ background: cell.background }}
           onClick={() => handleClick(cell)}
+          style={{
+            background: isHighlighted(cell.id)? "#b1b1b1": cell.background,
+            border: isHighlighted(cell.id)? "2px solid #797979": null,
+          }}
         >
           <p className={styles.textId}>{cell.id}</p>
-          {/* {cell.piece && <p>{cell.piece}</p>} */}
-          <img className={styles.imgg} src={cell.img} alt="" />
+
+          <img
+            className={styles.imgg}
+            src={cell.img}
+            alt=""
+          />
         </div>
       ))}
     </div>
