@@ -16,10 +16,14 @@ export default function PlayWithYourself() {
     console.log("whereFrom ", whereFrom, "___", "whereTo ", whereTo);
   } 
 
+  function name(params) {
+    console.log("кто сейчас ходит ", whoseMove);
+  }
 
   return (
     <div className={styles.playWithYourself}>
-      <button onClick={test}>wdffd</button>
+      <button onClick={name} >whoseMove </button>
+      <button onClick={test}>Test</button>
       <button
         onClick={() => {
           console.log(board);

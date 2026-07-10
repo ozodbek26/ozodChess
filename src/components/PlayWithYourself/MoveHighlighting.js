@@ -7,7 +7,7 @@ export function MoveHighlighting(whereFrom, board) {
   return board.filter((cell) => {
       if (cell.id === whereFrom.id) return false;
       if (cell.piece && cell.shapecolor === whereFrom.shapecolor) return false;
-
+      
       const result = moveValidator(whereFrom, cell, board, () => {});
       return Boolean(result);
     })

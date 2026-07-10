@@ -6,6 +6,9 @@ import { movePiece } from "./movePiece";
 import { moveValidator } from "./moveValidator";
 import { MoveHighlighting } from "./MoveHighlighting";
 
+// import { Check } from "./Check/Check";
+import { IsLegalMove } from "./Check/IsLegalMove";
+
 export default function Board({
   whoseMove,
   setWhoseMove,
@@ -46,9 +49,7 @@ export default function Board({
           img: piece ? piece.img : null,
 
           twoMove:
-            piece &&
-            (piece.kto === "PawnBlack" ||
-              piece.kto === "PawnWhite")
+            piece && (piece.kto === "PawnBlack" || piece.kto === "PawnWhite")
               ? true
               : false,
         });
@@ -59,8 +60,8 @@ export default function Board({
   }, [setBoard]);
 
   const [clicks, setClicks] = useState(0);
-
   const [highlightedMoves, setHighlightedMoves] = useState([]);
+  const [KingСheck, setKingСheck] = useState(false);
 
   function isHighlighted(id) {
     return highlightedMoves.includes(id);
@@ -114,22 +115,19 @@ export default function Board({
 
       if (cell.id === whereFrom.id) {
         console.log("нельзя ходить на ту же клетку");
+        setClicks(0);
         return;
       }
 
       if (cell.shapecolor === whereFrom.shapecolor) {
         console.log("нельзя ходить на свою фигуру");
+        setClicks(0);
         return;
       }
 
       setClicks(0);
 
-      const moveResult = moveValidator(
-        whereFrom,
-        moveTo,
-        board,
-        setBoard
-      );
+      const moveResult = moveValidator(whereFrom, moveTo, board, setBoard);
 
       if (!moveResult) {
         console.log("ход невозможен");
@@ -138,7 +136,24 @@ export default function Board({
         setHighlightedMoves([]);
 
         return;
-      }      if (moveResult.castling) {
+      }
+
+      const IsLegalMoveResult = IsLegalMove(
+        board,
+        whoseMove,
+        whereFrom,
+        moveTo,
+      );
+
+      if (!IsLegalMoveResult) {
+        alert("король под шахом");
+        setWhereFrom(null);
+        setWhereTo(null);
+        setHighlightedMoves([]);
+        return;
+      }
+
+      if (moveResult.castling) {
         setWhereFrom(null);
         setWhereTo(null);
       } else {
@@ -150,9 +165,12 @@ export default function Board({
           setWhereFrom,
           setWhereTo,
           setEatenFigures,
-          setRecordingMoves
+          setRecordingMoves,
         );
       }
+
+      //   const checkResult = Check(board, whoseMove);
+      //   const IsLegalMoveResult = IsLegalMove(board, whoseMove);
 
       setHighlightedMoves([]);
       setWhereFrom(null);
@@ -174,17 +192,13 @@ export default function Board({
           key={cell.id}
           onClick={() => handleClick(cell)}
           style={{
-            background: isHighlighted(cell.id)? "#b1b1b1": cell.background,
-            border: isHighlighted(cell.id)? "2px solid #797979": null,
+            background: isHighlighted(cell.id) ? "#b1b1b1" : cell.background,
+            border: isHighlighted(cell.id) ? "2px solid #797979" : null,
           }}
         >
           <p className={styles.textId}>{cell.id}</p>
 
-          <img
-            className={styles.imgg}
-            src={cell.img}
-            alt=""
-          />
+          <img className={styles.imgg} src={cell.img} alt="" />
         </div>
       ))}
     </div>
