@@ -8,6 +8,7 @@ import { MoveHighlighting } from "./MoveHighlighting";
 
 // import { Check } from "./Check/Check";
 import { IsLegalMove } from "./Check/IsLegalMove";
+import { getBoardAfterMove, isCheckmate } from "./Check/Checkmate";
 
 export default function Board({
   whoseMove,
@@ -61,13 +62,15 @@ export default function Board({
 
   const [clicks, setClicks] = useState(0);
   const [highlightedMoves, setHighlightedMoves] = useState([]);
-  const [KingСheck, setKingСheck] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
   function isHighlighted(id) {
     return highlightedMoves.includes(id);
   }
 
   function handleClick(cell) {
+    if (gameOver) return;
+
     const moveFrom = whereFrom;
     const moveTo = cell;
 
@@ -153,6 +156,9 @@ export default function Board({
         return;
       }
 
+      const boardAfterMove = getBoardAfterMove(board, whereFrom, moveTo);
+      const nextColor = whoseMove === "white" ? "black" : "white";
+
       if (moveResult.castling) {
         setWhereFrom(null);
         setWhereTo(null);
@@ -169,8 +175,10 @@ export default function Board({
         );
       }
 
-      //   const checkResult = Check(board, whoseMove);
-      //   const IsLegalMoveResult = IsLegalMove(board, whoseMove);
+      if (isCheckmate(boardAfterMove, nextColor)) {
+        alert("Мат!");
+        setGameOver(true);
+      }
 
       setHighlightedMoves([]);
       setWhereFrom(null);

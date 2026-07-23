@@ -1,8 +1,13 @@
 import { moveValidator } from "../moveValidator";
 
 import { Check } from "./Check";
+import { getBoardAfterMove } from "./Checkmate";
 
 export function IsLegalMove(board, whoseMove, whereFrom, moveTo) {
+  if (moveTo.kto === "KingWhite" || moveTo.kto === "KingBlack") {
+    return false;
+  }
+
   const from = whereFrom.id;
   const to = moveTo.id;
 
@@ -16,30 +21,10 @@ export function IsLegalMove(board, whoseMove, whereFrom, moveTo) {
     return false;
   }
 
-  const boardAfterMove = copiedBoard.map((cell) => {
-    if (cell.id === from) {
-      return {
-        ...cell,
-        piece: null,
-        shapecolor: null,
-        kto: null,
-        img: null,
-      };
-    }
 
-    if (cell.id === to) {
-      return {
-        ...cell,
-        piece: whereFrom.piece,
-        shapecolor: whereFrom.shapecolor,
-        kto: whereFrom.kto,
-        img: whereFrom.img,
-      };
-    }
-
-    return cell;
-  });
+  const boardAfterMove = getBoardAfterMove(copiedBoard, whereFrom, moveTo);
 
   const checkResult = Check(boardAfterMove, whoseMove);
+
   return !checkResult;
 }
